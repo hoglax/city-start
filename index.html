@@ -704,8 +704,91 @@
                     </div>
                 </div>
             </section>
+            
+   <!-- 6. АТТЕСТАЦИЯ & ТЕСТЫ -->
+            <div v-if="activeTab === 'testing'" class="space-y-8 animate-fadeIn">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white">Интерактивное тестирование</h2>
+                    <p class="text-sm text-slate-400">Проверка знаний регламентов Сити Старт. Для успешного прохождения модуля необходимо набрать не менее 80% правильных ответов.</p>
+                </div>
 
-            <!-- TAB 6: LEADERBOARD -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Прохождение теста -->
+                    <div class="bg-dark-900 border border-slate-800 rounded-3xl p-6 lg:col-span-8 space-y-6">
+                        <div v-if="!activeQuiz" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div v-for="quiz in quizzes" :key="quiz.id" class="p-6 rounded-2xl bg-slate-800/20 border border-slate-800 hover:border-brand-500/40 transition-all flex flex-col justify-between h-48">
+                                <div>
+                                    <span class="text-[10px] text-brand-500 uppercase tracking-widest font-extrabold">{{ quiz.module }}</span>
+                                    <h3 class="text-md font-extrabold text-white mt-1">{{ quiz.title }}</h3>
+                                    <p class="text-xs text-slate-400 mt-2">{{ quiz.questions.length }} вопросов • Минимальный балл: 80%</p>
+                                </div>
+                                <div class="flex items-center justify-between mt-4">
+                                    <span class="text-xs font-bold text-slate-300">Статус: {{ quiz.passed ? 'Сдан ✓' : 'Не пройден' }}</span>
+                                    <button @click="startQuiz(quiz)" class="bg-brand-500 text-dark-950 font-extrabold px-4 py-2 rounded-xl text-xs hover:bg-brand-600 transition-all">
+                                        Начать тест
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else class="space-y-6">
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+                                <div>
+                                    <span class="text-xs text-brand-500 font-bold uppercase tracking-wider">{{ activeQuiz.title }}</span>
+                                    <h3 class="text-lg font-bold text-white mt-1">Вопрос {{ activeQuestionIndex + 1 }} из {{ activeQuiz.questions.length }}</h3>
+                                </div>
+                                <span class="text-xs font-bold bg-slate-800 px-3 py-1 rounded-full text-slate-300">
+                                    Таймер: {{ quizTimer }} сек.
+                                </span>
+                            </div>
+
+                            <div>
+                                <h4 class="text-md font-bold text-slate-200 leading-relaxed">{{ currentQuestion.question }}</h4>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div v-for="(option, idx) in currentQuestion.options" :key="idx"
+                                     @click="selectedOptionIndex = idx"
+                                     :class="['p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between', selectedOptionIndex === idx ? 'bg-brand-500/10 border-brand-500 text-brand-500 font-bold' : 'bg-slate-800/40 border-slate-800 text-slate-300 hover:border-slate-700']">
+                                    <span>{{ option }}</span>
+                                    <div class="w-5 h-5 rounded-full border border-slate-600 flex items-center justify-center shrink-0"
+                                         :class="selectedOptionIndex === idx ? 'bg-brand-500 border-brand-500 text-dark-950' : ''">
+                                        <i v-if="selectedOptionIndex === idx" data-lucide="check" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between pt-4 border-t border-slate-800">
+                                <button @click="cancelQuiz" class="text-xs font-bold text-slate-400 hover:text-white px-4 py-2">
+                                    Прервать тест
+                                </button>
+                                <button @click="nextQuestion" class="bg-brand-500 text-dark-950 font-extrabold px-6 py-2.5 rounded-xl text-xs hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/10">
+                                    {{ activeQuestionIndex === activeQuiz.questions.length - 1 ? 'Завершить тест' : 'Следующий вопрос' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 lg:col-span-4">
+                        <div class="bg-dark-900 border border-slate-800 p-6 rounded-3xl space-y-4">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">Ваша статистика тестов</h4>
+                            
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800">
+                                    <div class="text-2xl font-extrabold text-brand-500">{{ currentUser.deals }}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold mt-1 uppercase">Сделок закрыто</div>
+                                </div>
+                                <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800">
+                                    <div class="text-2xl font-extrabold text-sky-400">{{ completedTestsCount }} / 5</div>
+                                    <div class="text-[10px] text-slate-400 font-bold mt-1 uppercase">Сдано тестов</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: LEADERBOARD -->
             <section id="tab-leaderboard" class="hidden space-y-8">
                 <div class="flex justify-between items-center">
                     <div>
@@ -793,7 +876,7 @@
                 </div>
             </section>
 
-            <!-- TAB 7: SUPERVISOR DASHBOARD -->
+            <!-- TAB 8: SUPERVISOR DASHBOARD -->
             <section id="tab-supervisor" class="hidden space-y-8">
                 <div class="flex justify-between items-center">
                     <div>
